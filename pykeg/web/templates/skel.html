@@ -1,18 +1,20 @@
 {# Bare-bones skeletal template. #}
 {% load kegweblib %}
 {% load humanize %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <title>{% block title %}Kegbot{% endblock %}</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
 
 {% block css %}
 <link rel="icon" type="image/png" href="{{ STATIC_URL}}images/kegbot-icon-72x72.png" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap_v3/css/bootstrap.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}lib/bootstrap-progressbar/css/bootstrap-progressbar-3.2.0.min.css" media="screen"/>
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/kegweb.css" media="screen"/>
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}fancybox/jquery.fancybox.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}font-awesome-4.2.0/css/font-awesome.min.css" media="screen" />
 {% endblock %}
 
 {% block kb-extracss %}{% endblock %}
@@ -27,9 +29,9 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.timeago.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.autounits.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollstop.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.lazyload.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.unveil.js"></script>
 
-<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap_v3/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}lib/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
 
 <script type="text/javascript" src="{{ STATIC_URL }}highcharts/js/highcharts.js"></script>
@@ -50,30 +52,40 @@
 {% endif %}
 
 <script type="text/javascript">
-  $(document).ready(function() {
+  $(function() {
       $("span.hmeasure").autounits({ metric: {% if metric_volumes %}true{% else %}false{% endif %} })
+	  
       $("abbr.timeago").timeago();
-      $(".alert").alert()
-      $(".clickable").each(function() {
+      
+	  $(".alert").alert()
+      
+	  
+		$(".clickable").each(function() {
         var href = $(this).attr("data-href");
         $(this).click(function(e) {
-          var node = e.target.nodeName.toLowerCase();
-          if (node == 'a' || node == 'img') return;
-          window.location = href;
-          return false;
-        });
-      });
-      $("img.lazy").lazyload();
-      $("a.gallery-image").fancybox({
+         var node = e.target.nodeName.toLowerCase();
+         if (node == 'a' || node == 'img') return;
+         window.location = href;
+         return false;
+       });
+      })
+      
+	  // $("img.lazy").lazyload();
+      
+	  $("img.lazy").unveil();
+	  
+	  $("a.gallery-image").fancybox({
         'speedIn' : 100,
         'speedOut' : 100,
         'titlePosition' : 'inside',
         'cyclic' : true,
       });
-      $('.bar').progressbar({
-          display_text: 'fill',
+	  
+      $('div.progress div.progress-bar').progressbar({
+         display_text: 'fill',
           percent_format: function(p) {return p + '% remaining';}
       });
+  
   });
 </script>
 

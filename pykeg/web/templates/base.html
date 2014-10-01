@@ -2,11 +2,17 @@
 {% load kegweblib %}
 {% load humanize %}
 
-{% block title %}{% if kbsite.title %}{{ kbsite.title }}{% else %}Kegbot{% endif %}{% endblock %}
+{% block title %}
+    {% if kbsite.title %}
+        {{ kbsite.title }}
+    {% else %}
+        Kegbot
+    {% endif %}
+{% endblock %}
 
 {% block css %}
 {{ block.super }}
-<style>
+<style type="text/css">
   body {
 {% if kbsite %}{% if kbsite.background_image %}
     background-image: url({{kbsite.background_image.image.url}});
@@ -21,78 +27,84 @@
 {% endblock css %}
 
 {% block body %}
-  <div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
-        {% spaceless %}
-        {% if kbsite %}
-        <a class="brand" href="{% url "kb-home" %}">
-        {% else %}
-        <a class="brand" href="/">
-        {% endif %}
-        {{ kbsite.title }}
-        </a>{% endspaceless %}
-
-        <ul class="nav">
-          {% if kbsite %}
-          {% if HAVE_SESSIONS %}{% navitem "kb-sessions" "Sessions" %}{% endif %}
-          {% navitem "kb-kegs" "Kegs" %}
-          {% navitem "kb-stats" "Stats" %}
-          {% if user.is_authenticated %}{% navitem "kb-account-main" "Account" %}{% endif %}
-          {% if user.is_staff %}
-          {% navitem "kegadmin-dashboard" "Admin" %}
-          {% endif %}
-          {% endif %}
-        </ul>
-
-        {% if not user.is_authenticated %}
-        <ul class="nav pull-right">
-          {% if kbsite.registration_mode == 'public' and not SSO_LOGIN_URL %}
-          <li><a href="{% url "registration_register" %}"><i class="icon-edit icon-white"></i> New Drinker</a></li>
-          {% endif %}
-          {% if SSO_LOGIN_URL %}
-          <li><a href="{{ SSO_LOGIN_URL }}"><i class="icon-user icon-white"></i> Log In</a></li>
-          {% else %}
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> Sign In <b class="caret"></b></a>
-            <ul class="dropdown-menu" style="padding: 15px;">
-              <form action="/accounts/login/" method="POST">
-                {% csrf_token %}
-                {% with login_form as form %}
-                  {% for hidden in form.hidden_fields %}
-                  {{ hidden }}
-                  {% endfor %}
-                {% endwith %}
-                <input class="span2" name="username" type="text" placeholder="Username" >
-                <input class="span2" name="password" type="password" placeholder="Password">
-                <button class="btn" type="submit">Log In <i class="icon-ok"></i></button>
-              </form>
-            </ul>
-          </li>
-          {% endif %}
-        </ul>
-        {% else %}
-        <ul class="nav pull-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user.username}} <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              {% if SSO_LOGOUT_URL %}
-              <li><a href="{{ SSO_LOGOUT_URL }}">Logout</a></li>
-              {% else %}
-              <li><a href="{% url "django.contrib.auth.views.logout" %}">Logout</a></li>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+			{% if kbsite %}
+            <a class="navbar-brand" href="{% url "kb-home" %}">     
+			{% else %}
+            <a class="navbar-brand" href="/">
+			{% endif %}
+                {{ kbsite.title }}
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+		  <ul class="nav navbar-nav">
+              {% if kbsite %}
+                {% if HAVE_SESSIONS %}
+                    {% navitem "kb-sessions" "Sessions" %}
+                {% endif %}
+              
+                {% navitem "kb-kegs" "Kegs" %}
+                {% navitem "kb-stats" "Stats" %}
+              
+                {% if user.is_authenticated %}{% navitem "kb-account-main" "Account" %}{% endif %}
+                
+                {% if user.is_staff %}
+                   {% navitem "kegadmin-dashboard" "Admin" %}
+                {% endif %}
+        
               {% endif %}
             </ul>
-          </li>
-        </ul>
-        {% endif %}
+			<ul class="nav navbar-nav navbar-right">
+			{% if kbsite.registration_mode == 'public' and not SSO_LOGIN_URL %}
+			<li><a href="{% url "registration_register" %}"><i class="fa fa-male"></i> Create Drinker</a></li> 
+			  {% endif %}
+			  {% if SSO_LOGIN_URL %}
+				<li><a href="{{ SSO_LOGIN_URL }}"><i class="fa fa-male"></i> Log In</a></li>
+			  {% else %}
+			
+			{% if not user.is_authenticated %}
+				<form class="navbar-form navbar-right" role="form" action="/accounts/login/" method="post">
+					{% csrf_token %}
+					{% with login_form as form %}
+					  {% for hidden in form.hidden_fields %}
+					  {{ hidden }}
+					  {% endfor %}
+					{% endwith %}
+					<div class="form-group">
+					  <input type="text" placeholder="Username" class="form-control input-sm" name="username" size="10">
+					</div>
+					<div class="form-group">
+					  <input type="password" placeholder="Password" class="form-control input-sm" name="password" size="10">
+					</div>
+					<button type="submit" class="btn btn-success navbar-btn">Sign in</button>
+				</form>
+			  {% else %}
+				
+					<li>
+						<p class="navbar-text navbar-right">
+							<a href="#" class="navbar-link"><i class="fa fa-user"></i> {{ user.username}}</a> (<a href="{% url "django.contrib.auth.views.logout" %}" class="navbar-link">Sign Out</a>)
+						</p>
+					</li>
+			  {% endif %}
+			{% endif %}
 
-      </div>
-    </div>
-  </div> <!-- /.navbar -->
+			  </ul>
+		  </div>
+	  </div>
+  </div>
 
-  <div class="container">
+  <div class="container-fluid">
     {% block header-margin %}
-    <div class="page-header">
+    
+	<div class="page-header">
       <h1>{% block pagetitle %}{% endblock %}</h1>
       {% block breadcrumbs %}{% endblock %}
       {% block messages %}
@@ -105,8 +117,10 @@
         </div>
       {% endfor %}
       {% endblock messages %}
-    </div>
-    {% endblock %}
+    
+	</div>
+    
+	{% endblock %}
 
     <div id="content">
     {% block content %}{% endblock %}

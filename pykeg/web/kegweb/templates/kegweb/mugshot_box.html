@@ -1,23 +1,21 @@
 {% spaceless %}
 <div>
+	{% if user %}
+	  <a href="{% url "kb-drinker" user.username %}">
+	{% endif %}
 
-{% if user %}
-  <a href="{% url "kb-drinker" user.username %}">
-{% endif %}
-
-  <img
-    {% if boxsize %}
-      style="width:{{boxsize}}px; height:{{boxsize}}px"
-    {% else %}
-      style="width:100%;"
-    {% endif %}
-{% if user and user.mugshot %}
-      src="{{ user.mugshot.resized.url }}"
-{% else %}
-      src="{{ STATIC_URL }}images/unknown-drinker.png"
-{% endif %}
-    />
-  </a>
-
+	  <img class="img-{{imagestyle}}"
+		{% if boxsize %}
+		  style="width:{{boxsize}}px; height:{{boxsize}}px"
+		{% else %}
+		  style="width:100%;"
+		{% endif %}
+	{% if user and user.mugshot %}
+		  src="{{ user.mugshot.resized.url }}"
+	{% else %}
+		  src="{{ STATIC_URL }}images/unknown-drinker.png"
+	{% endif %}
+		/>
+	  </a>
 </div>
 {% endspaceless %}

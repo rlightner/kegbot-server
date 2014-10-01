@@ -6,10 +6,11 @@
 {% block pagetitle %}Register New Account{% endblock %}
 
 {% block content %}
+
 <div class="well">
   <form action="" method="POST">
     {% csrf_token %}
-    {{ form|crispy }}
+    {% crispy form  %}
     <button type="submit" class="btn btn-success small">Register</button>
   </form>
 </div>

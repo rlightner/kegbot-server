@@ -1,5 +1,77 @@
+{% load kegweblib %}
+{% load humanize %}
+
 {% with 'timeline' as gallery_id %}
-{% for event in events %}
-{% include 'kegweb/includes/timeline_event.html' %}
-{% endfor %}
+	<ul class="timeline">
+	{% for event in events %}
+		{% if event.kind == 'drink_poured' %}
+		<li class="timeline-inverted">
+			<div class="timeline-badge picture">{% mugshot_box event.user 50 'circle' %}</div>
+			<div class="timeline-panel">
+				<div class="timeline-heading">
+					<h4 class="timeline-title">
+						<strong>{% drinker_name event.user %}</strong> poured {% volume event.drink.volume_ml %} of {{ event.drink.keg.type.name }}
+					</h4>
+					<p><small class="text-muted"><i class="fa fa-clock-o"></i> {% timeago event.time %}</small></p>
+				</div>
+				<div class="timeline-body">
+					<p>
+						<a href="{{ event.drink.get_absolute_url }}">Drink Link</a>
+						{% with event.drink.picture as pic %}
+						{% if pic %}
+						  <a class="gallery-image" rel="gallery-{{ gallery_id }}"
+							  href="{{ pic.resized.url }}"
+							  title="{% drinker_name event.user nolink %} pouring drink {{ event.drink.id }}">
+								<img class="lazy img-responsive" src="{{ STATIC_URL }}images/loader.gif" data-src="{{ pic.resized.url }}" />
+						  </a>
+						{% endif %}
+						{% endwith %}
+					</p>
+				</div>
+			</div>
+		</li>
+
+		{% elif event.kind == 'session_joined' %}
+		<li class="timeline-inverted">
+			<div class="timeline-badge info"><i class="fa fa-birthday-cake"></i></div>
+				<div class="timeline-panel">
+				<div class="timeline-heading">
+				  <h4 class="timeline-title">{% drinker_name event.user %} started drinking </h4>
+				  <p><small class="text-muted"><i class="fa fa-clock-o"></i> {% timeago event.time %}</small></p>
+				</div>
+				<div class="timeline-body">
+				  <p> </p>
+				</div>
+			</div>
+		</li>
+		{% elif event.kind == 'keg_tapped' %}
+		<li class="timeline-inverted">
+			<div class="timeline-badge info"><i class="glyphicon glyphicon-hand-left"></i></div>
+				<div class="timeline-panel">
+				<div class="timeline-heading">
+				  <h4 class="timeline-title"><a href="{{ event.keg.get_absolute_url }}">Keg {{ event.keg.id }} ({{ event.keg.type.name }})</a> was tapped.</h4>
+				  <p><small class="text-muted"><i class="fa fa-clock-o"></i> {% timeago event.time %}</small></p>
+				</div>
+				<div class="timeline-body">
+				  <p> </p>
+				</div>
+			</div>
+		</li>
+
+		{% elif event.kind == 'keg_ended' %}
+		<li class="timeline-inverted">
+			<div class="timeline-badge info"><i class="glyphicon glyphicon-hand-left"></i></div>
+				<div class="timeline-panel">
+				<div class="timeline-heading">
+				  <h4 class="timeline-title"><a href="{{ event.keg.get_absolute_url }}">Keg {{ event.keg.id }} ({{ event.keg.type.name }})</a> was finished.</h4>
+				  <p><small class="text-muted"><i class="fa fa-clock-o"></i>  {% timeago event.time %}</small></p>
+				</div>
+				<div class="timeline-body">
+				  <p> </p>
+				</div>
+			</div>
+		</li>
+		{% endif %}
+	{% endfor %}
+	</ul>
 {% endwith %}

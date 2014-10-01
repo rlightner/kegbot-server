@@ -35,22 +35,37 @@ except ImportError:
 from pykeg.core import models
 from pykeg.backend import get_kegbot_backend
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Field
+from crispy_forms.bootstrap import FormActions
 
 class KegbotRegistrationForm(forms.ModelForm):
     class Meta:
-        model = models.User
-        fields = ('email', 'username')
+	model = models.User
+	fields = ('email', 'username')
 
-    password1 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password"))
-    password2 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password (again)"))
+	password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+	password2 = forms.CharField(widget=forms.PasswordInput, label=_("Password (again)"))
 
+	helper = FormHelper()
+	helper.form_class = 'form-horizontal'
+	helper.layout = Layout(
+        Field('username', css_class='span12'),
+        Field('email', css_class='span12'),
+        Field('password', css_class='span12')
+        #Field('confirm_password', css_class='span12'),
+        #FormActions(
+        #    Submit('save_changes', 'Continue', css_class="btn-primary"),
+        #)
+    )	
+									
     def clean(self):
         super(KegbotRegistrationForm, self).clean()
+		
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
+				
         return self.cleaned_data
 
 
